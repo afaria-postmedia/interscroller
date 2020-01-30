@@ -121,8 +121,10 @@ export class Innerscroller implements IInnerscroller {
     if (elements.length) {
       for (const element of elements) {
         const id = element.getAttribute('id');
+
         if (id) {
           const props: any = this.getProps(element.dataset);
+
           if (props.debug)
             console.log(
               `[${this.displayName}] "${id}" pre-init -> passing DOM props:`,
@@ -169,12 +171,14 @@ export class Innerscroller implements IInnerscroller {
     for (const key in data) {
       if (data.hasOwnProperty(key) && Object.keys(defaultProps).includes(key)) {
         let value = data[key];
+
         if (!isNaN(value)) {
           value = parseInt(value);
         } else {
           if (value === 'true' || value === 'TRUE') value = true;
           if (value === 'false' || value === 'FALSE') value = false;
         }
+
         output[key] = value;
       }
     }
