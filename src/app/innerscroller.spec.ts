@@ -2,8 +2,7 @@ import { SELECTOR } from './constants';
 import { Innerscroller } from './innerscroller';
 
 const id: string = 'f548hgjf';
-
-const store = () => (window as any)[Innerscroller.displayName];
+const store = Innerscroller.getStore;
 
 describe(Innerscroller.displayName, () => {
   beforeEach(() => {
@@ -28,7 +27,7 @@ describe(Innerscroller.displayName, () => {
         element.setAttribute('id', id);
       }
       Innerscroller.init();
-      const instance = store()[id];
+      const instance = store(id);
       expect(instance).toBeDefined();
     });
 
@@ -40,7 +39,7 @@ describe(Innerscroller.displayName, () => {
         element.setAttribute('data-debug', 'false');
       }
       Innerscroller.init();
-      const instance = store()[id];
+      const instance = store(id);
       expect(instance.props.type).toBe('something');
       expect(instance.props.debug).toBe(false);
     });

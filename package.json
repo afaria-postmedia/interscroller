@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "webpack-dev-server --open --mode development",
+    "dev": "webpack-dev-server --open --port 8080 --mode development",
+    "dev:mobile": "webpack-dev-server --open --host 0.0.0.0 --port 8080 --mode development",
     "build": "webpack --mode production",
     "test": "jest"
   },

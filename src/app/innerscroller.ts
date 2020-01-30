@@ -3,7 +3,7 @@ import { SELECTOR } from './constants';
 interface IInnerscrollerProps {
   /**
    * type
-   * @description the mounted element
+   * @description
    */
   type: string;
 
@@ -61,7 +61,7 @@ export class Innerscroller implements IInnerscroller {
   /**
    * init()
    * @access private
-   * @description static initialization function for the instance
+   * @description initialization function for the instance
    */
   private init() {
     if (this.props.debug) {
@@ -88,7 +88,7 @@ export class Innerscroller implements IInnerscroller {
    * @description static initialization function for all components
    */
   public static init(): void {
-    (window as any)[Innerscroller.displayName] = {};
+    (window as any)[this.displayName] = {};
 
     // Get all matching elements
     const elements: HTMLElement[] = Array.prototype.slice.call(
@@ -100,27 +100,49 @@ export class Innerscroller implements IInnerscroller {
       for (const element of elements) {
         const id = element.getAttribute('id');
         if (id) {
-          const props: any = Innerscroller.getProps(element.dataset);
+          const props: any = this.getProps(element.dataset);
           if (props.debug)
             console.log(
               `[${Innerscroller.displayName}] "${id}" pre-init -> passing DOM props:`,
               props
             );
-          (window as any)[Innerscroller.displayName][id] = new Innerscroller(
-            element,
-            props
-          );
+
+          // Add to store and initialize
+          this.setStore(new Innerscroller(element, props));
         }
       }
     }
   }
 
   /**
-   * getProps()
+   * getStore()
    * @access public
+   * @description gets all stored instances from the global object store
+   */
+  public static getStore(id?: string) {
+    if (!(window as any)[Innerscroller.displayName])
+      (window as any)[Innerscroller.displayName] = {};
+
+    return id
+      ? (window as any)[Innerscroller.displayName][id]
+      : (window as any)[Innerscroller.displayName];
+  }
+
+  /**
+   * setStore()
+   * @access private
+   * @description adds an instance to the global object store
+   */
+  private static setStore(instance: IInnerscroller) {
+    this.getStore()[instance.id] = instance;
+  }
+
+  /**
+   * getProps()
+   * @access private
    * @description static function to get a& parse all valid props from data attributes
    */
-  public static getProps(data: any) {
+  private static getProps(data: any) {
     const output: any = {};
     for (const key in data) {
       if (data.hasOwnProperty(key) && Object.keys(defaultProps).includes(key)) {
