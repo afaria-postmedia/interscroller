@@ -110,8 +110,6 @@ export class Innerscroller implements IInnerscroller {
    * @description static initialization function for all components
    */
   public static init(): void {
-    (window as any)[this.displayName] = {};
-
     // Get all matching elements
     const elements: HTMLElement[] = Array.prototype.slice.call(
       document.querySelectorAll(SELECTOR)
