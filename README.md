@@ -2,13 +2,13 @@
 
 ### Available commands:
 
-**`dev`**
+#### `dev`
 
-For general desktop development
+For general desktop development w/ browser refresh
 
 #### `dev:mobile`
 
-For developing on mobile devices
+For developing on mobile devices w/ browser refresh
 
 #### `test`
 
