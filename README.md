@@ -4,11 +4,11 @@
 
 #### `dev`
 
-For general desktop development w/ browser refresh
+For localhost desktop development w/ browser refresh
 
 #### `dev:mobile`
 
-For developing on mobile devices w/ browser refresh
+For developing viewing on a mobile device using your current IP address w/ browser refresh
 
 #### `test`
 
