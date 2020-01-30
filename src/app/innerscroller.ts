@@ -125,7 +125,7 @@ export class Innerscroller implements IInnerscroller {
           const props: any = this.getProps(element.dataset);
           if (props.debug)
             console.log(
-              `[${Innerscroller.displayName}] "${id}" pre-init -> passing DOM props:`,
+              `[${this.displayName}] "${id}" pre-init -> passing DOM props:`,
               props
             );
 
