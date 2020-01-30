@@ -4,16 +4,16 @@
 
 #### Development
 
-npm run dev
+`npm run dev`
 
 #### Mobile devlopment
 
-npm run dev:mobile
+`npm run dev:mobile`
 
 #### Test
 
-npm test
+`npm test`
 
 #### Production
 
-npm run build
+`npm run build`
