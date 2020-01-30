@@ -1,6 +1,6 @@
-import { SELECTOR } from './constants';
+import { SELECTOR, DISPLAY_NAME } from './constants';
 
-interface IInnerscrollerProps {
+export interface IInnerscrollerProps {
   /**
    * type
    * @description
@@ -32,10 +32,16 @@ export interface IInnerscroller {
    * @description the properties of the component
    */
   props: IInnerscrollerProps;
+
+  /**
+   * methods
+   */
+  destroy(): void;
 }
 
 /**
- * Default props
+ * defaultProps
+ * @description defualt values for component properties which can be overriden by DOM attrs
  */
 const defaultProps: IInnerscrollerProps = {
   type: 'something',
@@ -49,6 +55,7 @@ export class Innerscroller implements IInnerscroller {
 
   /**
    * constructor()
+   * @description assign high level properties & initialize
    */
   constructor(element: HTMLElement, props: IInnerscrollerProps) {
     this.element = element;
@@ -56,6 +63,21 @@ export class Innerscroller implements IInnerscroller {
     this.props = { ...defaultProps, ...props };
 
     this.init();
+  }
+
+  /**
+   * destroy()
+   * @access public
+   * @description delete an instance by removing from dom and memory
+   */
+
+  public destroy() {
+    // Delete from store
+    delete Innerscroller.getStore()[this.id];
+
+    // Remove element from dom
+    if (this.element.parentNode)
+      this.element.parentNode.removeChild(this.element);
   }
 
   /**
@@ -80,7 +102,7 @@ export class Innerscroller implements IInnerscroller {
    * @access public
    * @description simply the name of the component for logging & display purposes
    */
-  public static displayName = 'Innerscroller';
+  public static displayName = DISPLAY_NAME;
 
   /**
    * init()
