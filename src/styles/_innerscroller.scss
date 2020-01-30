@@ -3,10 +3,37 @@
  */
 
 $innerscroller-var: something;
+$innerscroller-height-lg: 500px;
+$innerscroller-height-md: 400px;
+$innerscroller-height-sm: 300px;
+
+pm-innerscroller {
+  display: none;
+}
 
 /**
  *  Base style
  */
 .innerscroller {
-  // styles here ..
+  display: flex;
+  width: 100%;
+
+  &.innerscroller--image {
+    background-size: cover;
+    background-position: center center;
+    background-attachment: fixed;
+  }
+
+  &.loaded {
+    cursor: pointer;
+    height: $innerscroller-height-lg;
+
+    @include media-breakpoint-down(md) {
+      height: $innerscroller-height-md;
+    }
+
+    @include media-breakpoint-down(sm) {
+      height: $innerscroller-height-sm;
+    }
+  }
 }

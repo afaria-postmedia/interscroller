@@ -1,10 +1,48 @@
-import { SELECTOR } from './constants';
+import { SELECTOR, COMP_NAME } from './constants';
 import { Innerscroller } from './innerscroller';
+import { parseDataAttribute } from './utils';
 
+/**
+ * Test data & utils
+ */
 const id: string = 'f548hgjf';
+const attrs: any = {
+  'data-type': 'something',
+  'data-debug': 'false'
+};
+
+/**
+ * Global store method
+ */
 const store = Innerscroller.getStore;
 
+/**
+ * initWithId
+ * @description helper to add neccesary attrs to element and init instance (optionally with data attrs)
+ */
+const initWithId = (withAttrs: boolean = false): HTMLElement => {
+  const element = document.querySelector(SELECTOR) as HTMLElement;
+  if (element) {
+    element.setAttribute('id', id);
+    if (withAttrs) {
+      for (const key in attrs) {
+        if (attrs.hasOwnProperty(key)) {
+          element.setAttribute(key, attrs[key]);
+        }
+      }
+    }
+  }
+  Innerscroller.init();
+  return element;
+};
+
+/**
+ * Test suite
+ */
 describe(Innerscroller.displayName, () => {
+  /**
+   * Inject content into DOM before each
+   */
   beforeEach(() => {
     document.body.innerHTML = `
       <main>
@@ -15,6 +53,9 @@ describe(Innerscroller.displayName, () => {
     `;
   });
 
+  /**
+   * Before init
+   */
   describe('before init', () => {
     it('should not init without an id', () => {
       Innerscroller.init();
@@ -22,26 +63,24 @@ describe(Innerscroller.displayName, () => {
     });
 
     it('should add instance to global store', () => {
-      const element = document.querySelector(SELECTOR);
-      if (element) {
-        element.setAttribute('id', id);
-      }
-      Innerscroller.init();
-      const instance = store(id);
-      expect(instance).toBeDefined();
+      initWithId();
+      expect(store(id)).toBeDefined();
     });
 
-    it('it should map dom attrs to props', () => {
-      const element = document.querySelector(SELECTOR);
-      if (element) {
-        element.setAttribute('id', id);
-        element.setAttribute('data-type', 'something');
-        element.setAttribute('data-debug', 'false');
-      }
-      Innerscroller.init();
+    it('should map dom attrs to props', () => {
+      initWithId(true);
       const instance = store(id);
-      expect(instance.props.type).toBe('something');
-      expect(instance.props.debug).toBe(false);
+      expect(instance.props.type).toBe(attrs['data-type']);
+      expect(instance.props.debug).toBe(
+        parseDataAttribute(attrs['data-debug'])
+      );
+    });
+
+    it('should add neccesary classes', () => {
+      initWithId();
+      const instance = store(id);
+      expect(instance.element.className).toBeDefined();
+      expect(instance.element.classList.contains(COMP_NAME)).toBe(true);
     });
   });
 });
