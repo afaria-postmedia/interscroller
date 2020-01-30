@@ -2,18 +2,18 @@
 
 ### Available commands
 
-#### Development
+#### `dev`
 
-`npm run dev`
+For general desktop development
 
-#### Mobile devlopment
+#### `dev:mobile`
 
-`npm run dev:mobile`
+For developing on mobile devices
 
-#### Test
+#### `test`
 
-`npm test`
+For running all unit tests
 
-#### Production
+#### `build`
 
-`npm run build`
+For building a production package
