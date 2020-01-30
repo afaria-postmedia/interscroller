@@ -1,8 +1,8 @@
 # Innerscroller
 
-### Available commands
+### Available commands:
 
-#### `dev`
+**`dev`**
 
 For general desktop development
 
