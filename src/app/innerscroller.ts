@@ -71,7 +71,7 @@ export class Innerscroller implements IInnerscroller {
    * @description delete an instance by removing from dom and memory
    */
 
-  public destroy() {
+  public destroy(): void {
     // Delete from store
     delete Innerscroller.getStore()[this.id];
 
@@ -85,7 +85,7 @@ export class Innerscroller implements IInnerscroller {
    * @access private
    * @description initialization function for the instance
    */
-  private init() {
+  private init(): void {
     if (this.props.debug) {
       console.log(
         `[${Innerscroller.displayName}] "${this.id}" init -> instance intialized with`,
@@ -102,7 +102,7 @@ export class Innerscroller implements IInnerscroller {
    * @access public
    * @description simply the name of the component for logging & display purposes
    */
-  public static displayName = DISPLAY_NAME;
+  public static displayName: string = DISPLAY_NAME;
 
   /**
    * init()
@@ -143,7 +143,7 @@ export class Innerscroller implements IInnerscroller {
    * @access public
    * @description gets all stored instances from the global object store
    */
-  public static getStore(id?: string) {
+  public static getStore(id?: string): IInnerscroller | any {
     if (!(window as any)[Innerscroller.displayName])
       (window as any)[Innerscroller.displayName] = {};
 
@@ -157,7 +157,7 @@ export class Innerscroller implements IInnerscroller {
    * @access private
    * @description adds an instance to the global object store
    */
-  private static setStore(instance: IInnerscroller) {
+  private static setStore(instance: IInnerscroller): void {
     this.getStore()[instance.id] = instance;
   }
 
@@ -166,7 +166,7 @@ export class Innerscroller implements IInnerscroller {
    * @access private
    * @description static function to get a& parse all valid props from data attributes
    */
-  private static getProps(data: any) {
+  private static getProps(data: any): IInnerscrollerProps {
     const output: any = {};
     for (const key in data) {
       if (data.hasOwnProperty(key) && Object.keys(defaultProps).includes(key)) {
