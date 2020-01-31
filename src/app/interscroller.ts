@@ -137,6 +137,8 @@ export class InterScroller implements IInterScroller {
   private init(): void {
     const { media, mediaType } = this.props;
 
+    this.elements.root.setAttribute('data-init', 'true');
+
     if (this.props.debug) {
       console.log(
         `[${InterScroller.displayName}] "${this.id}" init -> instance intialized with`,
@@ -213,11 +215,6 @@ export class InterScroller implements IInterScroller {
    * @description inject necessary elements into the DOM
    */
   private addElements() {
-    this.elements.root.innerHTML = `
-      <div class="${COMP_NAME}--left"></div>
-      <div class="${COMP_NAME}--right"></div>
-      <div class="${COMP_NAME}--ad"></div>
-    `;
     this.elements.ad = this.elements.root.querySelector(
       `.${COMP_NAME}--ad`
     ) as HTMLElement;

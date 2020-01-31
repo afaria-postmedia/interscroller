@@ -10,6 +10,10 @@ const attrs: any = {
   'data-type': 'something',
   'data-debug': 'false'
 };
+const jsonData = {
+  bgColor: '#ff9000',
+  media: '/example.ad.jpg'
+};
 
 /**
  * Global store method
@@ -36,6 +40,8 @@ const initWithId = (withAttrs: boolean = false): HTMLElement => {
   return element;
 };
 
+let element: HTMLElement;
+
 /**
  * Test suite
  */
@@ -44,43 +50,25 @@ describe(InterScroller.displayName, () => {
    * Inject content into DOM before each
    */
   beforeEach(() => {
-    document.body.innerHTML = `
-      <main>
-        <section></section>
-        <${SELECTOR}></${SELECTOR}>
-        <section></section>
-      </main>
-    `;
+    element = document.createElement('div');
+    element.setAttribute(`data-ad-${COMP_NAME}`, '');
+    element.innerHTML = `<script type="application/json" id="${COMP_NAME}-data">{"bgColor":"#ff9000","media":"/example-ad.jpg"}</script>`;
+    document.body.appendChild(element);
   });
 
   /**
    * Before init
    */
   describe('before init', () => {
-    it('should not init without an id', () => {
+    it('should not init without an ID', () => {
       InterScroller.init();
-      expect(Object.keys(store()).length).toBe(0);
+      expect(element.getAttribute('data-init')).toBe(null);
     });
 
-    it('should add instance to global store', () => {
-      initWithId();
-      expect(store(id)).toBeDefined();
-    });
-
-    it('should map dom attrs to props', () => {
-      initWithId(true);
-      const instance = store(id);
-      expect(instance.props.type).toBe(attrs['data-type']);
-      expect(instance.props.debug).toBe(
-        parseDataAttribute(attrs['data-debug'])
-      );
-    });
-
-    it('should add neccesary classes', () => {
-      initWithId();
-      const instance = store(id);
-      expect(instance.element.className).toBeDefined();
-      expect(instance.element.classList.contains(COMP_NAME)).toBe(true);
+    it('should init with ID', () => {
+      element.setAttribute('id', id);
+      InterScroller.init();
+      expect(element.getAttribute('data-init')).toBe('true');
     });
   });
 });
