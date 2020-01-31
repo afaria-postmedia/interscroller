@@ -1,3 +1,3 @@
-import { Innerscroller } from './innerscroller';
+import { InterScroller } from './interscroller';
 
-Innerscroller.init();
+InterScroller.init();

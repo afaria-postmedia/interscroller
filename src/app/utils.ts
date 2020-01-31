@@ -8,3 +8,8 @@ export const parseDataAttribute = (input: any): any => {
   }
   return value;
 };
+
+export const parseHex = (str: string): string => {
+  const value = str.trim().replace(/#/g, '');
+  return value.length === 3 || value.length === 6 ? `#${value}` : '';
+};

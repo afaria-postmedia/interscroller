@@ -1,5 +1,5 @@
 import { SELECTOR, COMP_NAME } from './constants';
-import { Innerscroller } from './innerscroller';
+import { InterScroller } from './interscroller';
 import { parseDataAttribute } from './utils';
 
 /**
@@ -14,7 +14,7 @@ const attrs: any = {
 /**
  * Global store method
  */
-const store = Innerscroller.getStore;
+const store = InterScroller.getStore;
 
 /**
  * initWithId
@@ -32,14 +32,14 @@ const initWithId = (withAttrs: boolean = false): HTMLElement => {
       }
     }
   }
-  Innerscroller.init();
+  InterScroller.init();
   return element;
 };
 
 /**
  * Test suite
  */
-describe(Innerscroller.displayName, () => {
+describe(InterScroller.displayName, () => {
   /**
    * Inject content into DOM before each
    */
@@ -58,7 +58,7 @@ describe(Innerscroller.displayName, () => {
    */
   describe('before init', () => {
     it('should not init without an id', () => {
-      Innerscroller.init();
+      InterScroller.init();
       expect(Object.keys(store()).length).toBe(0);
     });
 

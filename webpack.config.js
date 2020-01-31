@@ -55,6 +55,9 @@ module.exports = {
       }
     ]
   },
+  devServer: {
+    contentBase: 'public'
+  },
   plugins: [
     new MiniCssExtractPlugin({
       filename: `${NAME}.css`

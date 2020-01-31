@@ -2,38 +2,83 @@
  *  Variables
  */
 
-$innerscroller-var: something;
-$innerscroller-height-lg: 500px;
-$innerscroller-height-md: 400px;
-$innerscroller-height-sm: 300px;
+$interscroller-bg-default: #999;
+$interscroller-height-desktop: 700px;
+$interscroller-height-tablet: 300px;
+$interscroller-height-device: $interscroller-height-tablet;
 
-pm-innerscroller {
-  display: none;
+body {
+  overflow-x: hidden;
+}
+
+pm-interscroller {
+  position: relative;
+  //display: none;
+
+  &.loaded {
+    display: block;
+  }
 }
 
 /**
  *  Base style
  */
-.innerscroller {
-  display: flex;
+.interscroller {
+  position: relative;
   width: 100%;
+  // background-color: $interscroller-bg-default;
+  // background-size: cover;
+  // background-position: center center;
+  // background-attachment: fixed;
 
-  &.innerscroller--image {
+  // &::before,
+  // &::after {
+  //   position: absolute;
+  //   content: '';
+  //   display: block;
+  //   width: 50%;
+  //   height: 100%;
+  //   background: inherit;
+  // }
+
+  // &::before {
+  //   left: 0;
+  //   transform: translateX(-50%);
+  // }
+
+  // &::after {
+  //   right: 0;
+  //   transform: translateX(50%);
+  // }
+
+  .interscroller--ad {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-color: $interscroller-bg-default;
     background-size: cover;
     background-position: center center;
     background-attachment: fixed;
+    z-index: 10;
+  }
+
+  .interscroller--left,
+  .interscroller--right {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    background: $interscroller-bg-default;
+    z-index: 5;
   }
 
   &.loaded {
+    display: block;
     cursor: pointer;
-    height: $innerscroller-height-lg;
+    height: $interscroller-height-device;
 
-    @include media-breakpoint-down(md) {
-      height: $innerscroller-height-md;
-    }
-
-    @include media-breakpoint-down(sm) {
-      height: $innerscroller-height-sm;
+    // Tablet landscape and desktop
+    @include media-breakpoint-up(lg) {
+      height: $interscroller-height-desktop;
     }
   }
 }
