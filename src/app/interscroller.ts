@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 
 import { parseDataAttribute, parseHex } from './utils';
-import { SELECTOR, DISPLAY_NAME, COMP_NAME } from './constants';
+import { SELECTOR, DISPLAY_NAME, COMP_NAME, DATA_SELECTOR } from './constants';
 
 export type InterScrollerElements = {
   root: HTMLElement;
@@ -95,14 +95,12 @@ export class InterScroller implements IInterScroller {
     };
     this.props = { ...defaultProps, ...props, ...this.getInjectedProps() };
 
-    console.log(this.props);
-
     this.init();
   }
 
   private getInjectedProps() {
     let data = {};
-    const jsonElement = this.elements.root.querySelector('#interscroller-data');
+    const jsonElement = this.elements.root.querySelector(DATA_SELECTOR);
 
     if (jsonElement) {
       data = jsonElement.innerHTML ? JSON.parse(jsonElement.innerHTML) : {};
@@ -157,7 +155,6 @@ export class InterScroller implements IInterScroller {
     }
 
     this.doStyles();
-
     this.initEvents();
   }
 
@@ -167,6 +164,8 @@ export class InterScroller implements IInterScroller {
    * @description initalizes all events
    */
   private initEvents(): void {
+    // Add click event
+    this.elements.root.addEventListener('click', this.onClick);
     // Window resize event
     window.addEventListener('resize', () => {
       this.onWindowResize();
@@ -283,6 +282,16 @@ export class InterScroller implements IInterScroller {
    */
   private onWindowResize(): void {
     this.doStyles();
+  }
+
+  /**
+   * onClick()
+   * @access private
+   * @description window resize event handler
+   */
+  private onClick(e: Event): void {
+    e.preventDefault();
+    console.log('on click, do something');
   }
 
   /* - - - - - - - - - - - - - - - STATIC - - - - - - - - - - - - - - */

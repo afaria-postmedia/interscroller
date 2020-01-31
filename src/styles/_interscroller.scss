@@ -7,50 +7,21 @@ $interscroller-height-desktop: 700px;
 $interscroller-height-tablet: 300px;
 $interscroller-height-device: $interscroller-height-tablet;
 
-body {
-  overflow-x: hidden;
-}
-
-pm-interscroller {
-  position: relative;
-  //display: none;
-
-  &.loaded {
-    display: block;
-  }
+/**
+ *  Unmounted
+ */
+[data-ad-interscroller] {
+  display: none;
 }
 
 /**
- *  Base style
+ *  Mounted
  */
 .interscroller {
   position: relative;
   width: 100%;
-  // background-color: $interscroller-bg-default;
-  // background-size: cover;
-  // background-position: center center;
-  // background-attachment: fixed;
 
-  // &::before,
-  // &::after {
-  //   position: absolute;
-  //   content: '';
-  //   display: block;
-  //   width: 50%;
-  //   height: 100%;
-  //   background: inherit;
-  // }
-
-  // &::before {
-  //   left: 0;
-  //   transform: translateX(-50%);
-  // }
-
-  // &::after {
-  //   right: 0;
-  //   transform: translateX(50%);
-  // }
-
+  // Ad element
   .interscroller--ad {
     position: relative;
     width: 100%;
@@ -62,6 +33,7 @@ pm-interscroller {
     z-index: 10;
   }
 
+  // Left & right bg panels
   .interscroller--left,
   .interscroller--right {
     position: absolute;
@@ -71,13 +43,14 @@ pm-interscroller {
     z-index: 5;
   }
 
+  // On loaded state
   &.loaded {
     display: block;
     cursor: pointer;
     height: $interscroller-height-device;
 
     // Tablet landscape and desktop
-    @include media-breakpoint-up(lg) {
+    @media (min-width: 1024px) {
       height: $interscroller-height-desktop;
     }
   }
