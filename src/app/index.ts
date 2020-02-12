@@ -1,3 +1,5 @@
-import { InterScroller } from './interscroller';
+// import { InterScroller } from './interscroller';
 
-InterScroller.init();
+// InterScroller.init();
+
+console.log('yo');

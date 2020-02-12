@@ -5,15 +5,13 @@
  */
 
 const path = require('path');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const HtmlWebPackPlugin = require('html-webpack-plugin');
 
 const NAME = 'innerscroller';
 const SRC_PATH = path.resolve('./src');
 const DIST_PATH = path.resolve('./dist');
 
 module.exports = {
-  entry: [`${SRC_PATH}/app/index.ts`, `${SRC_PATH}/styles/index.scss`],
+  entry: [`${SRC_PATH}/app/index.ts`],
   resolve: {
     extensions: ['.ts', '.js', '.json']
   },
@@ -34,37 +32,7 @@ module.exports = {
         test: /\.js$/,
         include: `${SRC_PATH}/app`,
         loader: 'source-map-loader'
-      },
-      {
-        test: /\.scss$/,
-        use: [
-          'style-loader',
-          MiniCssExtractPlugin.loader,
-          'css-loader',
-          'postcss-loader',
-          'sass-loader'
-        ]
-      },
-      {
-        test: /\.html$/,
-        use: [
-          {
-            loader: 'html-loader'
-          }
-        ]
       }
     ]
-  },
-  devServer: {
-    contentBase: 'public'
-  },
-  plugins: [
-    new MiniCssExtractPlugin({
-      filename: `${NAME}.css`
-    }),
-    new HtmlWebPackPlugin({
-      template: './public/index.html',
-      filename: './index.html'
-    })
-  ]
+  }
 };

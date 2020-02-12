@@ -1,48 +1,44 @@
-import classNames from 'classnames';
-
-import { parseDataAttribute, parseHex } from './utils';
-import { SELECTOR, DISPLAY_NAME, COMP_NAME, DATA_SELECTOR } from './constants';
+import { addStyles, isDesktop } from './utils';
+import * as constants from './constants';
 
 export type InterScrollerElements = {
-  root: HTMLElement;
-  ad?: HTMLElement;
-  left?: HTMLElement;
-  right?: HTMLElement;
+  wrapper: HTMLElement | null;
+  iframe: HTMLElement | null;
 };
 
 export interface IInterScrollerProps {
   /**
-   * type
+   * imageUrl
+   * @description
+   */
+  imageUrl: string;
+
+  /**
+   * mobileImageUrl
+   * @description
+   */
+  mobileImageUrl: string;
+
+  /**
+   * bgColor
    * @description
    */
   bgColor: string;
 
   /**
-   * media
+   * clickUrl
    * @description
    */
-  media: string | null;
+  clickUrl: string;
 
   /**
-   * mediaType
-   * @description
-   */
-  mediaType: 'image' | 'video';
-
-  /**
-   * debug
+   * forceHeight
    * @description turn console logging on/off
    */
-  debug: boolean;
+  forceHeight: string;
 }
 
 export interface IInterScroller {
-  /**
-   * id
-   * @description the id of the component
-   */
-  id: string;
-
   /**
    * elements
    * @description object that contains all HTML elements
@@ -56,10 +52,10 @@ export interface IInterScroller {
   props: IInterScrollerProps;
 
   /**
-   * props
-   * @description the properties of the component
+   * window
+   * @description the current window
    */
-  mediaSrc: any;
+  window: Window;
 
   /**
    * methods
@@ -67,47 +63,26 @@ export interface IInterScroller {
   destroy(): void;
 }
 
-/**
- * defaultProps
- * @description defualt values for component properties which can be overriden by DOM attrs
- */
-const defaultProps: IInterScrollerProps = {
-  media: null,
-  mediaType: 'image',
-  bgColor: '',
-  debug: false
-};
-
 export class InterScroller implements IInterScroller {
   public elements: InterScrollerElements;
-  public id: string;
   public props: IInterScrollerProps;
-  public mediaSrc: any;
+  public window: Window;
 
   /**
    * constructor()
    * @description assign high level properties & initialize
    */
-  constructor(element: HTMLElement, props: IInterScrollerProps) {
-    this.id = element.id;
+  constructor(iframe: HTMLElement, props: IInterScrollerProps) {
+    this.window = window.parent;
     this.elements = {
-      root: element
+      iframe,
+      wrapper: iframe.parentElement
     };
-    this.props = { ...defaultProps, ...props, ...this.getInjectedProps() };
+    this.props = props;
 
-    this.init();
-  }
-
-  private getInjectedProps() {
-    let data = {};
-    const jsonElement = this.elements.root.querySelector(DATA_SELECTOR);
-
-    if (jsonElement) {
-      data = jsonElement.innerHTML ? JSON.parse(jsonElement.innerHTML) : {};
-      return InterScroller.getProps(data);
+    if (this.canInit()) {
+      document.addEventListener('DOMContentLoaded', this.init);
     }
-
-    return data;
   }
 
   /* - - - - - - - - - - - - - - - PUBLIC METHODS - - - - - - - - - - - - - - */
@@ -118,255 +93,163 @@ export class InterScroller implements IInterScroller {
    * @description delete an instance by removing from dom and memory
    */
 
-  public destroy(): void {
-    // Delete from store
-    delete InterScroller.getStore()[this.id];
-
-    // Remove element from dom
-    if (this.elements.root.parentNode)
-      this.elements.root.parentNode.removeChild(this.elements.root);
-  }
+  public destroy(): void {}
 
   /* - - - - - - - - - - - - - - - INIT METHODS - - - - - - - - - - - - - - */
 
   /**
    * init()
-   * @access private
    * @description initialization function for the instance
    */
   private init(): void {
-    const { media, mediaType } = this.props;
-
-    this.elements.root.setAttribute('data-init', 'true');
-
-    if (this.props.debug) {
-      console.log(
-        `[${InterScroller.displayName}] "${this.id}" init -> instance intialized with`,
-        'element:',
-        this.elements.root,
-        '& props:',
-        this.props
-      );
-    }
-
-    this.addClasses();
-    this.addElements();
-
-    if (media && mediaType === 'image') {
-      this.initMediaImage();
-    }
-
-    this.doStyles();
+    this.doStyles(true);
+    if (this.props.clickUrl !== '') this.addClick();
     this.initEvents();
   }
 
   /**
    * initEvents()
-   * @access private
    * @description initalizes all events
    */
   private initEvents(): void {
-    // Add click event
-    this.elements.root.addEventListener('click', this.onClick);
     // Window resize event
-    window.addEventListener('resize', () => {
-      this.onWindowResize();
-    });
+    this.window.addEventListener('resize', this.onWindowResize);
   }
 
   /**
-   * initMediaImage()
-   * @access private
-   * @description init and load image source
+   * canInit()
+   * @description determine if the component can initialize
    */
-  private initMediaImage(): void {
-    const { media } = this.props;
-
-    // Create image
-    this.mediaSrc = new Image();
-
-    // Set load event
-    this.mediaSrc.onload = this.onMediaLoad();
-
-    // Pass source and style attrs
-    this.mediaSrc = media;
-
-    if (this.elements.ad)
-      this.elements.ad.style.backgroundImage = `url(${media})`;
+  private canInit(): boolean {
+    return this.elements.iframe &&
+      this.elements.wrapper &&
+      this.props.imageUrl !== '' &&
+      isDesktop()
+      ? true
+      : false;
   }
 
   /* - - - - - - - - - - - - - - - DOM MANIPULATION - - - - - - - - - - - - - - */
 
   /**
-   * addClasses()
-   * @access private
-   * @description initialization function for the instance
-   */
-  private addClasses(): void {
-    this.elements.root.className = classNames(
-      COMP_NAME,
-      this.props.media ? `${COMP_NAME}--${this.props.mediaType}` : ''
-    );
-  }
-
-  /**
-   * addElements()
-   * @access private
-   * @description inject necessary elements into the DOM
-   */
-  private addElements() {
-    this.elements.ad = this.elements.root.querySelector(
-      `.${COMP_NAME}--ad`
-    ) as HTMLElement;
-    this.elements.left = this.elements.root.querySelector(
-      `.${COMP_NAME}--left`
-    ) as HTMLElement;
-    this.elements.right = this.elements.root.querySelector(
-      `.${COMP_NAME}--right`
-    ) as HTMLElement;
-  }
-
-  /**
    * doStyles()
-   * @access private
-   * @description adds necessary style properties to elements
+   * @description add/alter styles of elements
    */
-  private doStyles() {
-    const space = this.calculateEmptySpace();
-    // Left side
-    if (this.elements.left) {
-      if (this.props.bgColor)
-        this.elements.left.style.backgroundColor = parseHex(this.props.bgColor);
-      this.elements.left.style.width = `${space}px`;
-      this.elements.left.style.left = `-${space}px`;
+  private doStyles(initialLoad: boolean = false): void {
+    if (!this.elements.iframe || !this.elements.wrapper) return;
+
+    /**
+     *  Iframe styles
+     */
+    if (initialLoad) {
+      this.elements.iframe.style.height = '100%';
     }
-    // Right side
-    if (this.elements.right) {
-      if (this.props.bgColor)
-        this.elements.right.style.backgroundColor = parseHex(
-          this.props.bgColor
-        );
-      this.elements.right.style.width = `${space}px`;
-      this.elements.right.style.right = `-${space}px`;
-    }
+    addStyles(this.elements.iframe, {
+      width: `${this.window.innerWidth}px`
+    });
+
+    /**
+     *  Wrapper styles
+     */
+    addStyles(this.elements.wrapper, {
+      width: `${this.window.innerWidth}px`,
+      height: `${
+        !isDesktop() ? constants.HEIGHT_MOBILE_TABLET : constants.HEIGHT_DESKTOP
+      }px`,
+      backgroundImage: `url(${
+        !isDesktop() ? this.props.mobileImageUrl : this.props.imageUrl
+      })`
+    });
   }
 
   /**
-   * calculateEmptySpace()
-   * @access private
-   * @description calculates the space needed to fill on either side
+   * addClick()
+   * @description adds transparent click element so the user can be taken to destination
    */
-  private calculateEmptySpace(): number {
-    const contentWidth = this.elements.root.getBoundingClientRect().width;
-    return (window.innerWidth - contentWidth) / 2;
+  private addClick(): void {
+    const link = document.createElement('a');
+    link.setAttribute('href', this.props.clickUrl);
+    link.setAttribute('target', '_top');
+    link.setAttribute('style', 'display:block;height:100%;');
+    document.body.appendChild(link);
   }
 
   /* - - - - - - - - - - - - - - - EVENT HANDLERS - - - - - - - - - - - - - - */
 
   /**
-   * onMediaLoad()
-   * @access private
-   * @description fires when media source is finished loading
-   */
-  private onMediaLoad(): void {
-    this.elements.root.classList.add('loaded');
-  }
-
-  /**
    * onWindowResize()
-   * @access private
-   * @description window resize event handler
+   * @description update styles whenever the window is resized
    */
   private onWindowResize(): void {
     this.doStyles();
-  }
-
-  /**
-   * onClick()
-   * @access private
-   * @description window resize event handler
-   */
-  private onClick(e: Event): void {
-    e.preventDefault();
-    console.log('on click, do something');
   }
 
   /* - - - - - - - - - - - - - - - STATIC - - - - - - - - - - - - - - */
 
   /**
    * displayName
-   * @access public
    * @description simply the name of the component for logging & display purposes
    */
-  public static displayName: string = DISPLAY_NAME;
+  public static displayName: string = constants.DISPLAY_NAME;
 
   /**
    * init()
-   * @access public
-   * @description static initialization function for all components
+   * @description static initialization function
    */
   public static init(): void {
     // Get all matching elements
     const elements: HTMLElement[] = Array.prototype.slice.call(
-      document.querySelectorAll(SELECTOR)
+      document.querySelectorAll(constants.SELECTOR)
     );
 
     // If elements found, loop & initialize if they have an id
     if (elements.length) {
       for (const element of elements) {
-        const id = element.getAttribute('id');
-
-        if (id) {
-          const props: IInterScrollerProps = this.getProps(element.dataset);
-
-          if (props.debug)
-            console.log(
-              `[${this.displayName}] "${id}" pre-init -> passing DOM props:`,
-              props
-            );
-
-          // Add to store and initialize
-          this.setStore(new InterScroller(element, props));
-        }
+        const props: IInterScrollerProps = this.getProps();
+        new InterScroller(element, props);
       }
     }
-  }
-
-  /**
-   * getStore()
-   * @access public
-   * @description gets all stored instances from the global object store
-   */
-  public static getStore(id?: string): IInterScroller | any {
-    if (!(window as any)[InterScroller.displayName])
-      (window as any)[InterScroller.displayName] = {};
-
-    return id
-      ? (window as any)[InterScroller.displayName][id]
-      : (window as any)[InterScroller.displayName];
-  }
-
-  /**
-   * setStore()
-   * @access private
-   * @description adds an instance to the global object store
-   */
-  private static setStore(instance: IInterScroller): void {
-    this.getStore()[instance.id] = instance;
   }
 
   /**
    * getProps()
-   * @access private
-   * @description static function to get a& parse all valid props from data attributes
+   * @description static function to get properties to init with
    */
-  private static getProps(data: any): IInterScrollerProps {
-    const output: any = {};
-    for (const key in data) {
-      if (data.hasOwnProperty(key) && Object.keys(defaultProps).includes(key)) {
-        output[key] = parseDataAttribute(data[key]);
-      }
-    }
-    return output;
+  private static getProps(): IInterScrollerProps {
+    return constants.IS_DEV
+      ? {
+          imageUrl:
+            'http://via.placeholder.com/' +
+            constants.WIDTH_DESKTOP +
+            'x' +
+            constants.HEIGHT_DESKTOP +
+            '/' +
+            constants.PLACEHOLDER_IMAGE_COLOR +
+            '/ffffff?text=' +
+            constants.WIDTH_DESKTOP +
+            '%20x%20' +
+            constants.HEIGHT_DESKTOP,
+          mobileImageUrl:
+            'http://via.placeholder.com/' +
+            constants.WIDTH_MOBILE_TABLET +
+            'x' +
+            constants.HEIGHT_MOBILE_TABLET +
+            '/' +
+            constants.PLACEHOLDER_IMAGE_COLOR +
+            '/ffffff?text=' +
+            constants.WIDTH_MOBILE_TABLET +
+            '%20x%20' +
+            constants.HEIGHT_MOBILE_TABLET,
+          bgColor: '#' + constants.PLACEHOLDER_BG_COLOR,
+          clickUrl: 'https://nationalpost.com',
+          forceHeight: 'no'
+        }
+      : {
+          imageUrl: '[%image_url%]',
+          mobileImageUrl: '[%mobile_image_url%]',
+          bgColor: '[%bg_color%]',
+          clickUrl: '%%CLICK_URL_UNESC%%[%click_url%]',
+          forceHeight: '[%force_height%]'
+        };
   }
 }

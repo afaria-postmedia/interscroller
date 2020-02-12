@@ -1,4 +1,11 @@
 export const DISPLAY_NAME = 'InterScroller';
 export const COMP_NAME = 'interscroller';
-export const SELECTOR = `[data-ad-${COMP_NAME}]`;
-export const DATA_SELECTOR = `#${COMP_NAME}-data`;
+export const SELECTOR = `[data-ad-${COMP_NAME}] iframe`;
+export const VERSION = '1.45';
+export const WIDTH_DESKTOP = 1000;
+export const WIDTH_MOBILE_TABLET = 300;
+export const HEIGHT_DESKTOP = 700;
+export const HEIGHT_MOBILE_TABLET = 600;
+export const PLACEHOLDER_IMAGE_COLOR = '000000';
+export const PLACEHOLDER_BG_COLOR = 'ff0000';
+export const IS_DEV = false;
